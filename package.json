@@ -1,0 +1,27 @@
+{
+  "name": "steamboat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BonattoEduardo/SteamBoat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BonattoEduardo/SteamBoat/issues"
+  },
+  "homepage": "https://github.com/BonattoEduardo/SteamBoat#readme",
+  "type": "module",
+  "dependencies": {
+    "discord.js": "^14.6.0",
+    "dotenv": "^16.0.3",
+    "node": "^19.1.0"
+  }
+}

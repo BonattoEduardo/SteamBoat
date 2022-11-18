@@ -8,7 +8,9 @@ const client = new Client({
     intents: []
 });
 
+// Listeners de eventos do cliente (`client`)
 ready(client);
 interactionCreate(client);
 
+// Fazendo login do bot
 client.login(process.env.TOKEN);

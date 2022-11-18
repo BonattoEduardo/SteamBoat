@@ -2,13 +2,9 @@ import Command from "src/types/Command";
 
 const Ping: Command = {
   name: "ping",
-  description: "pinga pinga",
+  description: "Responde 'Pong!' quando recebe um comando '/ping'",
   run: async (_, interaction) => {
-    if (!interaction.isChatInputCommand()) return;
-
-    if (interaction.commandName == 'ping') {
-      await interaction.reply('Pong!');
-    }
+    await interaction.reply('Pong!');
   }
 };
 

@@ -1,5 +1,5 @@
-import type Command from "src/types/Command";
-import Ping from "./Ping";
+import type Command from "./types/Command";
+import Ping from "./commands/Ping";
 
 /** Lista de comandos do Bot */
 const commands: Command[] = [

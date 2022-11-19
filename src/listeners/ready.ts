@@ -1,5 +1,5 @@
 import type { Client } from "discord.js";
-import commands from "src/commands";
+import commands from "../commands";
 
 /**
  * Listener do evento `ready` (disparado quando o cliente está pronto para execução)
@@ -13,6 +13,6 @@ export default (client: Client): void => {
         // Registrando os comandos na aplicação
         await client.application.commands.set(commands);
 
-        console.log(`${client.user.username} is online`);
+        console.log(`${client.user.username} está online`);
     });
 }; 

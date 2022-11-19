@@ -1,5 +1,5 @@
 import type { Client, Interaction, CommandInteraction } from "discord.js";
-import commands from "src/commands";
+import commands from "../commands";
 
 /**
  * Listener do evento `interactionCreate` (disparado quando uma interação é recebida pelo cliente)
@@ -23,9 +23,6 @@ const handleSlashCommand = async (client: Client, interaction: CommandInteractio
         interaction.followUp({ content: "Comando não encontrado" });
         return;
     }
-
-    // Adiando a resposta que será enviada
-    await interaction.deferReply();
 
     // Rodando o comando encontrado
     slashCommand.run(client, interaction);

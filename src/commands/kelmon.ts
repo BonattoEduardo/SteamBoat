@@ -1,7 +1,7 @@
 import Command from "../types/Command";
 
 
-const kelmon: Command = {
+const Kelmon: Command = {
     name: "kelmon",
     description: "ele mesmo",
     run: async (_, interaction) => {
@@ -11,4 +11,4 @@ const kelmon: Command = {
     }
 };
 
-export default kelmon;
+export default Kelmon;

@@ -1,13 +1,13 @@
-import type Command from "./types/Command";
+import type Command from "./interfaces/Command";
 import Ping from "./commands/ping";
 import Kelmon from "./commands/kelmon";
-import SearchGame from "./commands/searchGame";
+import Boat from "./commands/boat";
 
 /** Lista de comandos do Bot */
 const commands: Command[] = [
     Ping,
     Kelmon,
-    SearchGame
+    Boat
 ];
 
 export default commands;

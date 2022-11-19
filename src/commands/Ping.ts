@@ -1,4 +1,4 @@
-import Command from "../types/Command";
+import Command from "../interfaces/Command";
 
 const Ping: Command = {
     name: "ping",

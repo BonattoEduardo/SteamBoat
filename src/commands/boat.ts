@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from "discord.js";
+import IGDBApi from "../api/IGDBApi";
 import type Command from "../interfaces/Command";
 
 const Boat: Command = {
@@ -23,7 +24,14 @@ const Boat: Command = {
             return;
         }
 
-        // await searchGame(nomeJogo); 
+        try {
+            const igdbApi = new IGDBApi();
+            const gameData = await igdbApi.searchGame(nomeJogo);
+
+            await interaction.editReply(`Jogo encontrado: ${gameData.name}`);
+        } catch (error) {
+            await interaction.editReply(String(error));
+        }
     }
 };
 

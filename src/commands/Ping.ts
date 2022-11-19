@@ -1,17 +1,12 @@
-import type Command from "../types/Command";
-import { setTimeout } from "node:timers/promises";
+import Command from "../types/Command";
 
 const Ping: Command = {
-  name: "ping",
-  description: "Responde 'Pong!' quando recebe um comando '/ping'",
-  run: async (_, interaction) => {
-    // Adiando a resposta que será enviada (para o discord não achar que a resposta falhou)
-    await interaction.deferReply();
-    
-    await setTimeout(4000);
-
-    await interaction.editReply('Pong!');
-  }
+    name: "ping",
+    description: "Responde pong",
+    run: async (_, interaction) => {
+        // await interaction.channel?.send("teste do teste do teste do teste");
+        await interaction.reply(`Vai se fuder ${interaction.user.username}`);
+    }
 };
 
 export default Ping;

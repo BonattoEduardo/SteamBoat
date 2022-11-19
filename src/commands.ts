@@ -1,9 +1,11 @@
 import type Command from "./types/Command";
-import Ping from "./commands/Ping";
+import Ping from "./commands/ping";
+import kelmon from "./commands/kelmon";
 
 /** Lista de comandos do Bot */
 const commands: Command[] = [
-    Ping
+    Ping,
+    kelmon
 ];
 
 export default commands;

@@ -3,7 +3,7 @@ import type IIGDBApi from "../interfaces/IIgdbApi";
 
 export default class IGDBApi implements IIGDBApi {
 
-    searchGame(name: string): GameData {
+    searchGame(name: string): Promise<GameData> {
         throw new Error("Method not implemented.");
     }
 

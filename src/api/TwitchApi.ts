@@ -4,7 +4,7 @@ import Stream from "../interfaces/Stream";
 
 export default class TwitchApi implements ITwitchApi {
 
-    searchStreamsForGame(game: GameData): Stream[] {
+    searchStreamsForGame(game: GameData): Promise<Stream[]> {
         throw new Error("Method not implemented.");
     }
 

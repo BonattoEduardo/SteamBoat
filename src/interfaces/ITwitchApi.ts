@@ -3,5 +3,5 @@ import type Stream from "./Stream";
 
 /** Interface para a classe de interações com a API da Twitch.tv */
 export default interface ITwitchApi {
-    searchStreamsForGame(game: GameData): Stream[];
+    searchStreamsForGame(game: GameData): Promise<Stream[]>;
 }

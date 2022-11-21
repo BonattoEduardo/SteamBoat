@@ -3,13 +3,13 @@ export default interface GameData {
     /** Nome do jogo */
     name: string;
     /** Lista de nomes alternativos do jogo */
-    alternativeNames: string[];
+    alternativeNames?: string[];
     /** Lista de DLCs do jogo */
-    dlcs: GameData[];
+    dlcs?: GameData[];
     /** Avaliação do jogo */
-    aggregatedRating: number;
+    aggregatedRating?: number;
     /** Número de seguidores do jogo */
-    follows: number;
+    follows?: number;
     /** Nomes dos idiomas suportados pelo jogo */
-    languages: string[];
+    languages?: string[];
 }

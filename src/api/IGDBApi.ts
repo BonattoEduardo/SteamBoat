@@ -1,5 +1,5 @@
 import type GameData from "../interfaces/GameData";
-import type IIGDBApi from "../interfaces/IIgdbApi";
+import type IIGDBApi from "../interfaces/IIGDBApi";
 
 export default class IGDBApi implements IIGDBApi {
 

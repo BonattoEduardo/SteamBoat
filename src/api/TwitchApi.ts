@@ -6,7 +6,7 @@ import api from "./api";
 
 /** URL para solicitar tokens de autenticação da API da twitch */
 export const TWITCH_TOKEN_URL = 'https://id.twitch.tv/oauth2/token';
-/** URL para solicitar tokens de autenticação da API da twitch */
+/** URL para pesquisar os canais na API da twitch */
 export const TWITCH_SEARCH_URL = 'https://api.twitch.tv/helix/search/channels';
 
 export default class TwitchApi implements ITwitchApi {

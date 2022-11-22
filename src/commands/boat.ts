@@ -28,7 +28,7 @@ const Boat: Command = {
             const twitch = new TwitchApi();
             const channels = await twitch.searchStreamsForGame({ name: nomeJogo });
 
-            await interaction.editReply(`Canais ao vivo jogando ${nomeJogo}:\n${channels.map(c => c.display_name).join('\n')}`);
+            await interaction.editReply(`Canais ao vivo jogando ${nomeJogo}:\n${channels.map(c => 'https://www.twitch.tv/'+c.display_name).join('\n')}`);
         } catch (error) {
             await interaction.editReply(String(error));
         }

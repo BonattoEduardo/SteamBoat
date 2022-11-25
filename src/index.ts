@@ -3,6 +3,7 @@ import config from "./config";
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
 import TwitchApi from "./api/TwitchApi";
+import IGDBApi from "./api/IGDBApi";
 
 console.log(`O bot está iniciando...`);
 
@@ -16,3 +17,4 @@ interactionCreate(client);
 client.login(config.TOKEN);
 // Inicializando a api da Twitch
 TwitchApi.init();
+IGDBApi.init();

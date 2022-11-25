@@ -1,9 +1,9 @@
+import type Command from "../interfaces/Command";
 import { ApplicationCommandOptionType } from "discord.js";
 import IGDBApi from "../api/IGDBApi";
-import type Command from "../interfaces/Command";
 
-const IGDBA: Command = {
-    name: "igdba",
+const Igdb: Command = {
+    name: "igdb",
     description: "Procura jogo...",
     options: [
         { 
@@ -25,15 +25,16 @@ const IGDBA: Command = {
         }
 
         try {
-            const IBGA = new IGDBApi();
-            const resposta = await IBGA.searchGame(nomeJogo);
+            const igdbApi = new IGDBApi();
+            const resposta = await igdbApi.searchGame(nomeJogo);
 
-            await interaction.editReply(`${resposta}`);
+            await interaction.editReply(`Jogo Pesquisado: ${resposta?.name}`);
         } catch (error) {
+            console.log(error);
             await interaction.editReply(String(error));
         }
 
     }
 };
 
-export default IGDBA;
+export default Igdb;

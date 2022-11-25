@@ -2,12 +2,13 @@ import type GameData from '../interfaces/GameData';
 import type IIGDBApi from '../interfaces/IIGDBApi';
 import api from './api';
 import config from '../config';
+import IGDBGame from '../interfaces/IGDBGame';
 
 /** URL para solicitar tokens de autenticação da API da twitch */
 export const TWITCH_TOKEN_URL = 'https://id.twitch.tv/oauth2/token';
 
 /** URL para pesquisar jogos */
-export const TWITCH_GAMES_URL = 'https://api.igdb.com/v4/games';
+export const IGDB_GAMES_URL = 'https://api.igdb.com/v4/games';
 
 
 export default class IGDBApi implements IIGDBApi {
@@ -30,18 +31,25 @@ export default class IGDBApi implements IIGDBApi {
   }
 
 
-  async searchGame(name: string): Promise<GameData> {
+  async searchGame(name: string): Promise<GameData | null> {
 
-    const res = await api.post(TWITCH_GAMES_URL, {
+    const query = (
+      `search "${name}"; ` +
+      'fields name,alternative_names,dlcs,aggregated_rating,follows,language_supports;'
+    );
+
+    const res = await api.post<IGDBGame[]>(IGDB_GAMES_URL, query, {
       headers: {
         'Client-ID': config.TWITCH_CLIENT_ID,
         'Authorization': `Bearer ${IGDBApi.TOKEN}`,
-        'search': `${name}`,
-        'fields': 'name'
+        'Accept': 'application/json',
+        'Content-Type': 'text/plain'
       }
     });
+    
+    const first = res.data[0];
 
-    return res.data.data;
+    return { name: first?.name };
   }
 
 

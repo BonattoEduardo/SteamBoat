@@ -1,9 +1,12 @@
 
 export default interface IGDBGame {
-    name: string;
-    alternative_names?: number[];
+    id?: number;
+    name?: string;
+    alternative_names?: string[];
     dlcs?: number[];
     aggregated_rating?: number;
     follows?: number;
-    language_supports?: number[];
+    language_id?: number;
+    languages?: string[];
+    language?: number;
 }

@@ -1,19 +1,17 @@
 
 export default interface GameData {
     /** Id do jogo */
-    id?: number;
+    id: number;
     /** Nome do jogo */
-    name?: string;
+    name: string;
     /** Lista de nomes alternativos do jogo */
-    alternative_names?: string[];
+    alternativeNames?: string[];
     /** Lista de DLCs do jogo */
-    dlcs?: number[];
+    dlcs?: GameData[];
     /** Avaliação do jogo */
     aggregatedRating?: number;
     /** Número de seguidores do jogo */
     follows?: number;
     /** Nomes dos idiomas suportados pelo jogo */
     languages?: string[];
-    /** Ids dos idiomas suportados pelo jogo */
-    language_supports?: number[];
 }

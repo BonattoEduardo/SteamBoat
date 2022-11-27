@@ -1,5 +1,5 @@
 import type Command from "../interfaces/Command";
-import { ApplicationCommandOptionType } from "discord.js";
+import { ApplicationCommandOptionType, ButtonStyle, ComponentType } from "discord.js";
 import IGDBApi from "../api/IGDBApi";
 
 const Igdb: Command = {
@@ -26,9 +26,34 @@ const Igdb: Command = {
 
         try {
             const igdbApi = new IGDBApi();
-            const resposta = await igdbApi.searchGame(nomeJogo);
+            const jogos = await igdbApi.searchGame(nomeJogo);
 
-            await interaction.editReply(`Jogo Pesquisado: ${resposta?.name}`);
+            await interaction.editReply({
+                embeds: [{
+                    title: 'Jogos Encontrados (primeiros 5 resultados)',
+                    color: 0x8379d9,
+                    description: jogos.length == 0 ? 'Nenhum jogo encontrado :(' : undefined,
+                    fields: jogos.map((j, i) => ({
+                        name: j.name,
+                        value: j.alternativeNames?.length
+                            ? `Outros nomes: ${j.alternativeNames?.join(', ')}`
+                            : 'Nenhum outro nome'
+                    }))
+                }],
+                components: [
+                    {
+                        type: ComponentType.ActionRow,
+                        components: [
+                            {
+                                customId: 'select',
+                                type: ComponentType.StringSelect,
+                                placeholder: 'Selecione um dos jogos',
+                                options: jogos.map(j => ({ label: j.name, value: j.id.toString() })),
+                            }
+                        ]
+                    }
+                ]
+            });
         } catch (error) {
             console.log(error);
             await interaction.editReply(String(error));

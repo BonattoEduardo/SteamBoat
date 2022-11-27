@@ -24,14 +24,14 @@ const Boat: Command = {
             return;
         }
 
-        try {
-            const twitch = new TwitchApi();
-            const channels = await twitch.searchStreamsForGame({ name: nomeJogo });
+        // try {
+        //     const twitch = new TwitchApi();
+        //     const channels = await twitch.searchStreamsForGame({ name: nomeJogo });
 
-            await interaction.editReply(`Canais ao vivo jogando ${nomeJogo}:\n${channels.map(c => 'https://www.twitch.tv/'+c.display_name).join('\n')}`);
-        } catch (error) {
-            await interaction.editReply(String(error));
-        }
+        //     await interaction.editReply(`Canais ao vivo jogando ${nomeJogo}:\n${channels.map(c => 'https://www.twitch.tv/'+c.display_name).join('\n')}`);
+        // } catch (error) {
+        //     await interaction.editReply(String(error));
+        // }
 
         // await interaction.deferReply();
 

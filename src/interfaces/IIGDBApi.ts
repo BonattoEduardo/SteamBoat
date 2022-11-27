@@ -3,17 +3,11 @@ import type GameData from "./GameData";
 /** Interface para a classe de interações com a API do IGDB */
 export default interface IIGDBApi {
     /** Pesquisa um jogo na api do IGDB */
-    searchGame(name: string): Promise<GameData | null>;
-
-    /** Pesquisa idiomas suportados de um jogo na api do IGDB */
-    searchLanguageSupports(id: number): Promise<number[] | null>;
-
+    searchGame(name: string): Promise<GameData[]>;
     /** Pesquisa nome dos idiomas suportados de um jogo na api do IGDB */
-    searchLanguageNames(ids: number[]): Promise<string[] | null>;
-
+    searchLanguages(gameId: number): Promise<string[]>;
     /** Pesquisa DLCs de um jogo na api do IGDB */
-    searchDLCs(game: GameData): Promise<GameData[] | null>;
-
+    searchDLCs(gameId: number): Promise<GameData[]>;
     /** Pesquisa nomes alternativos de um jogo na api do IGDB */
-    searchAltNames(id: number): Promise<GameData | null>;
+    searchAltNames(gameId: number): Promise<string[]>;
 }

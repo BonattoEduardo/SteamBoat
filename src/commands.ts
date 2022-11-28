@@ -9,7 +9,7 @@ const commands: Command[] = [
     Ping,
     Kelmon,
     Boat,
-    Igdb,
+    Igdb
 ];
 
 export default commands;

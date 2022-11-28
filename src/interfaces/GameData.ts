@@ -1,5 +1,7 @@
 
 export default interface GameData {
+    /** Id do jogo */
+    id: number;
     /** Nome do jogo */
     name: string;
     /** Lista de nomes alternativos do jogo */

@@ -4,10 +4,16 @@ import type GameData from "./GameData";
 export default interface IIGDBApi {
     /** Pesquisa um jogo na api do IGDB */
     searchGame(name: string): Promise<GameData[]>;
-    /** Pesquisa nome dos idiomas suportados de um jogo na api do IGDB */
-    searchLanguages(gameId: number): Promise<string[]>;
-    /** Pesquisa DLCs de um jogo na api do IGDB */
-    searchDLCs(gameId: number): Promise<GameData[]>;
-    /** Pesquisa nomes alternativos de um jogo na api do IGDB */
-    searchAltNames(gameId: number): Promise<string[]>;
+    /** Requisita um jogo a partir do ID na api do IGDB */
+    getGame(id: number): Promise<GameData | null>;
+    /** Requisita idiomas a partir dos IDs na api do IGDB */
+    getLanguages(ids: number[]): Promise<string[]>;
+    /** Requisita DLCs a partir dos IDs na api do IGDB */
+    getDLCs(ids: number[]): Promise<GameData[]>;
+    /** Requisita nomes alternativos a partir dos IDs na api do IGDB */
+    getAltNames(ids: number[]): Promise<string[]>;
+    /** Requisita gêneros a partir dos IDs na api do IGDB */
+    getGenres(ids: number[]): Promise<string[]>;
+    /** Requisita plataformas a partir dos IDs na api do IGDB */
+    getPlatforms(ids: number[]): Promise<string[]>;
 }

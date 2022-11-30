@@ -10,8 +10,10 @@ export default interface GameData {
     dlcs?: GameData[];
     /** Avaliação do jogo */
     aggregatedRating?: number;
-    /** Número de seguidores do jogo */
-    follows?: number;
     /** Nomes dos idiomas suportados pelo jogo */
     languages?: string[];
+    /** Lista dos genêros aos quais o jogo pertence */
+    genres?: string[];
+    /** Lista das plataformas em que o jogo está disponível */
+    platforms?: string[];
 }

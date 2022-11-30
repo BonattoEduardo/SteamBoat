@@ -1,12 +1,16 @@
 import type Command from "../interfaces/Command";
-import { ApplicationCommandOptionType, ButtonStyle, ComponentType } from "discord.js";
+import { ApplicationCommandOptionType, ComponentType } from "discord.js";
 import IGDBApi from "../api/IGDBApi";
+import gameDetails from "../components/gameDetails";
+import gameList from "../components/gameList";
+import TwitchApi from "../api/TwitchApi";
 
+/** Comando que permite pesquisar jogos na api do IGDB */
 const Igdb: Command = {
     name: "igdb",
     description: "Procura jogo...",
     options: [
-        { 
+        {
             name: "jogo",
             description: "Jogo que você deseja pesquisar",
             type: ApplicationCommandOptionType.String,
@@ -28,37 +32,49 @@ const Igdb: Command = {
             const igdbApi = new IGDBApi();
             const jogos = await igdbApi.searchGame(nomeJogo);
 
-            await interaction.editReply({
-                embeds: [{
-                    title: 'Jogos Encontrados (primeiros 5 resultados)',
-                    color: 0x8379d9,
-                    description: jogos.length == 0 ? 'Nenhum jogo encontrado :(' : undefined,
-                    fields: jogos.map((j, i) => ({
-                        name: j.name,
-                        value: j.alternativeNames?.length
-                            ? `Outros nomes: ${j.alternativeNames?.join(', ')}`
-                            : 'Nenhum outro nome'
-                    }))
-                }],
-                components: [
-                    {
-                        type: ComponentType.ActionRow,
-                        components: [
-                            {
-                                customId: 'select',
-                                type: ComponentType.StringSelect,
-                                placeholder: 'Selecione um dos jogos',
-                                options: jogos.map(j => ({ label: j.name, value: j.id.toString() })),
-                            }
-                        ]
+            const message = await interaction.editReply(gameList(jogos));
+            const collector = message.createMessageComponentCollector({ componentType: ComponentType.StringSelect });
+
+            collector.on('collect', async (e) => {
+                const id = Number(e.values[0]);
+                if (id == null || !isFinite(id)) {
+                    await e.reply('Erro: Opção inválida');
+                    return;
+                }
+
+                await e.deferReply();
+                const game = await igdbApi.getGame(id);
+                const message = await e.followUp(gameDetails(game));
+
+                if (game == null) {
+                    return;
+                }
+
+                const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button });
+                collector.on('collect', async (e) => {
+                    await e.deferReply();
+                    
+                    try {
+                        const twitchApi = new TwitchApi();
+                        const channels = await twitchApi.searchStreamsForGame(game);
+    
+                        await e.followUp(
+                            `Canais ao vivo jogando ${nomeJogo}:` +
+                            `\n${channels.map(c => 'https://www.twitch.tv/'+c.display_name).join('\n')}`
+                        );
+                    } catch (error) {
+                        console.log(error);
+                        await e.followUp(String(error));
                     }
-                ]
+                });
             });
+
+            
+            
         } catch (error) {
             console.log(error);
             await interaction.editReply(String(error));
         }
-
     }
 };
 

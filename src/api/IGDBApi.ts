@@ -1,6 +1,6 @@
 import type GameData from '../interfaces/GameData';
 import type IIGDBApi from '../interfaces/IIGDBApi';
-import type { AlternativeName, Game, Language, LanguageSupport } from '../interfaces/IGDBTypes';
+import type { AlternativeName, Game, Genre, Language, LanguageSupport, Platform } from '../interfaces/IGDBTypes';
 import { TWITCH_TOKEN_URL } from './TwitchApi';
 import api from './api';
 import config from '../config';
@@ -10,7 +10,9 @@ export enum IGDBEndpoints {
   GAMES = 'https://api.igdb.com/v4/games',
   LANGUAGE_SUPPORTS = 'https://api.igdb.com/v4/language_supports',
   LANGUAGES = 'https://api.igdb.com/v4/languages',
-  ALTERNATIVE_NAMES = 'https://api.igdb.com/v4/alternative_names'
+  ALTERNATIVE_NAMES = 'https://api.igdb.com/v4/alternative_names',
+  GENRES = 'https://api.igdb.com/v4/genres',
+  PLATFORMS = 'https://api.igdb.com/v4/platforms'
 }
 
 export default class IGDBApi implements IIGDBApi {
@@ -45,41 +47,73 @@ export default class IGDBApi implements IIGDBApi {
       url: IGDBEndpoints.GAMES,
       headers: IGDBApi.headers,
       method: 'POST',
-      data: `search "${name}"; fields name,aggregated_rating,follows; limit 5; where category = 0;`
+      data: `search "${name}"; fields name,alternative_names; limit 5; where category = 0;`
     });
 
     const gameDatas: GameData[] = [];
 
     for (const game of data) {
-      const altNames = await this.searchAltNames(game.id);
-      const languages = await this.searchLanguages(game.id);
-      const dlcs = await this.searchDLCs(game.id);
+      const altNames = await this.getAltNames(game.alternative_names ?? []);
 
       gameDatas.push({
         id: game.id,
         name: game.name,
-        follows: game.follows,
-        aggregatedRating: game.aggregated_rating,
-        alternativeNames: altNames,
-        languages: languages,
-        dlcs: dlcs
+        alternativeNames: altNames
       });
     }
 
     return gameDatas;
   }
 
-  /** Pesquisa nome dos idiomas suportados de um jogo na api do IGDB */
-  public async searchLanguages(gameId: number): Promise<string[]> {
+  /** Requisita um jogo a partir do ID na api do IGDB */
+  public async getGame(id: number): Promise<GameData | null> {
+    const { data } = await api<Game[]>({
+      url: IGDBEndpoints.GAMES,
+      headers: IGDBApi.headers,
+      method: 'POST',
+      data: `fields name,aggregated_rating,alternative_names,dlcs,genres,platforms; ` +
+            `limit 1; where id = ${id};`
+    });
+
+    const game = data[0];
+
+    if (!game) {
+      return null;
+    }
+
+    const altNames = await this.getAltNames(game.alternative_names ?? []);
+    const dlcs = await this.getDLCs(game.dlcs ?? []);
+    const genres = await this.getGenres(game.genres ?? []);
+    const platforms = await this.getPlatforms(game.platforms ?? []);
+    // const languages = await this.getLanguages(game.language_supports ?? []);
+
+    return {
+      id: game.id,
+      name: game.name,
+      aggregatedRating: game.aggregated_rating,
+      alternativeNames: altNames,
+      dlcs: dlcs,
+      genres: genres,
+      platforms: platforms
+      // languages: languages
+    };
+  }
+
+  /** Requisita idiomas a partir dos IDs na api do IGDB */
+  public async getLanguages(ids: number[]): Promise<string[]> {
+    if (ids.length == 0) {
+      return [];
+    } 
+
     const { data: langSupports } = await api<LanguageSupport[]>({
       url: IGDBEndpoints.LANGUAGE_SUPPORTS,
       headers: IGDBApi.headers,
       method: 'POST',
-      data: `fields game,language; where game = ${gameId};`
+      data: `fields game,language; where id = (${ids.join(',')});`
     });
 
-    const ids = langSupports.map(l => l.language).join(',');
-    if (ids.length == 0) {
+    const idsIdiomas = langSupports.map(l => l.language);
+    if (idsIdiomas.length == 0) {
       return [];
     } 
 
@@ -87,40 +121,78 @@ export default class IGDBApi implements IIGDBApi {
       url: IGDBEndpoints.LANGUAGES,
       headers: IGDBApi.headers,
       method: 'POST',
-      data: `fields name,native_name,locale; where id = (${ids});`
+      data: `fields name,native_name,locale; where id = (${idsIdiomas.join(',')});`
     });
 
     return langs.map(l => l.locale);
   }
 
-  /** Pesquisa nomes alternativos de um jogo na api do IGDB */
-  public async searchAltNames(gameId: number): Promise<string[]> {
+  /** Requisita nomes alternativos a partir dos IDs na api do IGDB */
+  public async getAltNames(ids: number[]): Promise<string[]> {
+    if (ids.length == 0) {
+      return [];
+    }
+
     const { data } = await api<AlternativeName[]>({
       url: IGDBEndpoints.ALTERNATIVE_NAMES,
       method: 'POST',
       headers: IGDBApi.headers,
-      data: `fields game,name; where game = ${gameId};`
+      data: `fields game,name; where id = (${ids.join(',')});`
     });
 
     return data.map(a => a.name);
   }
 
-  /** Pesquisa DLCs de um jogo na api do IGDB */
-  public async searchDLCs(gameId: number): Promise<GameData[]> {
+  /** Requisita DLCs a partir dos IDs na api do IGDB */
+  public async getDLCs(ids: number[]): Promise<GameData[]> {
+    if (ids.length == 0) {
+      return [];
+    }
+
     const { data } = await api<Game[]>({
       url: IGDBEndpoints.GAMES,
       headers: IGDBApi.headers,
       method: 'POST',
-      data: `fields name,aggregated_rating,follows; where parent_game = ${gameId};`,
+      data: `fields name,aggregated_rating; where id = (${ids.join(',')});`,
     });
 
     return data.map(d => ({
       id: d.id,
       name: d.name,
-      aggregatedRating: d.aggregated_rating,
-      follows: d.follows
+      aggregatedRating: d.aggregated_rating
     }));
   }
 
+  /** Requisita gêneros a partir dos IDs na api do IGDB */
+  public async getGenres(ids: number[]): Promise<string[]> {
+    if (ids.length == 0) {
+      return [];
+    }
+
+    const { data } = await api<Genre[]>({
+      url: IGDBEndpoints.GENRES,
+      headers: IGDBApi.headers,
+      method: 'POST',
+      data: `fields name; where id = (${ids.join(',')});`
+    });
+
+    return data.map(d => d.name);
+  }
+
+  /** Requisita plataformas a partir dos IDs na api do IGDB */
+  public async getPlatforms(ids: number[]): Promise<string[]> {
+    if (ids.length == 0) {
+      return [];
+    }
+
+    const { data } = await api<Platform[]>({
+      url: IGDBEndpoints.PLATFORMS,
+      headers: IGDBApi.headers,
+      method: 'POST',
+      data: `fields name; where id = (${ids.join(',')});`
+    });
+
+    return data.map(d => d.name);
+  }
 }
 

@@ -10,7 +10,7 @@ export default (game: GameData | null): InteractionReplyOptions => {
 
     // Container da mensagem de resposta
     const embed = new EmbedBuilder()
-        .setColor(0x8379d9)
+        .setColor(0x746EB5)
         .setTitle(game != null ? `Informações sobre ${game.name}` : 'Jogo não encontrado')
         .setDescription(game == null ? 'O jogo selecionado não foi encontrado :(' : null)
         .setFields(game != null ? [

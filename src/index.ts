@@ -1,9 +1,8 @@
 import { Client } from "discord.js";
+import BaseTwitchApi from "./api/BaseTwitchApi";
 import config from "./config";
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
-import TwitchApi from "./api/TwitchApi";
-import IGDBApi from "./api/IGDBApi";
 
 console.log(`O bot está iniciando...`);
 
@@ -15,6 +14,6 @@ interactionCreate(client);
 
 // Fazendo login do bot
 client.login(config.TOKEN);
-// Inicializando a api da Twitch
-TwitchApi.init();
-IGDBApi.init();
+
+// Inicializando o token de autenticação da twitch
+BaseTwitchApi.init();

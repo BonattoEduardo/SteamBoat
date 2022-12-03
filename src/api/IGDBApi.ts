@@ -1,9 +1,6 @@
 import type GameData from '../interfaces/GameData';
-import type IIGDBApi from '../interfaces/IIGDBApi';
 import type { AlternativeName, Game, Genre, Language, LanguageSupport, Platform } from '../interfaces/IGDBTypes';
-import { TWITCH_TOKEN_URL } from './TwitchApi';
-import api from './api';
-import config from '../config';
+import BaseTwitchApi from './BaseTwitchApi';
 
 /** Enumeração com os enpoints da api do IGDB */
 export enum IGDBEndpoints {
@@ -15,37 +12,12 @@ export enum IGDBEndpoints {
   PLATFORMS = 'https://api.igdb.com/v4/platforms'
 }
 
-export default class IGDBApi implements IIGDBApi {
-  /** Cabeçalho das requisições */
-  private static headers: Record<string, string>;
-
-  /** Inicializa a API, pegando o token de autenticação */
-  public static async init(): Promise<void> {
-    const res = await api<{ access_token?: string }>({
-      url: TWITCH_TOKEN_URL,
-      method: 'POST',
-      data: {
-        client_id: config.TWITCH_CLIENT_ID,
-        client_secret: config.TWITCH_CLIENT_SECRET,
-        grant_type: 'client_credentials'
-      }
-    });
-
-    const token = res.data.access_token;
-    if (!token) {
-      throw new Error('Token de autenticação da Twitch não encontrado');
-    }
-    this.headers = {
-      'Client-ID': config.TWITCH_CLIENT_ID,
-      'Authorization': `Bearer ${token}`
-    };
-  }
+export default abstract class IGDBApi {
 
   /** Pesquisa um jogo na api do IGDB */
-  public async searchGame(name: string): Promise<GameData[]> {
-    const { data } = await api<Game[]>({
+  public static async searchGame(name: string): Promise<GameData[]> {
+    const { data } = await BaseTwitchApi.request<Game[]>({
       url: IGDBEndpoints.GAMES,
-      headers: IGDBApi.headers,
       method: 'POST',
       data: `search "${name}"; fields name,alternative_names; limit 5; where category = 0;`
     });
@@ -66,10 +38,9 @@ export default class IGDBApi implements IIGDBApi {
   }
 
   /** Requisita um jogo a partir do ID na api do IGDB */
-  public async getGame(id: number): Promise<GameData | null> {
-    const { data } = await api<Game[]>({
+  public static async getGame(id: number): Promise<GameData | null> {
+    const { data } = await BaseTwitchApi.request<Game[]>({
       url: IGDBEndpoints.GAMES,
-      headers: IGDBApi.headers,
       method: 'POST',
       data: `fields name,aggregated_rating,alternative_names,dlcs,genres,platforms; ` +
             `limit 1; where id = ${id};`
@@ -100,14 +71,13 @@ export default class IGDBApi implements IIGDBApi {
   }
 
   /** Requisita idiomas a partir dos IDs na api do IGDB */
-  public async getLanguages(ids: number[]): Promise<string[]> {
+  public static async getLanguages(ids: number[]): Promise<string[]> {
     if (ids.length == 0) {
       return [];
     } 
 
-    const { data: langSupports } = await api<LanguageSupport[]>({
+    const { data: langSupports } = await BaseTwitchApi.request<LanguageSupport[]>({
       url: IGDBEndpoints.LANGUAGE_SUPPORTS,
-      headers: IGDBApi.headers,
       method: 'POST',
       data: `fields game,language; where id = (${ids.join(',')});`
     });
@@ -117,9 +87,8 @@ export default class IGDBApi implements IIGDBApi {
       return [];
     } 
 
-    const { data: langs } = await api<Language[]>({
+    const { data: langs } = await BaseTwitchApi.request<Language[]>({
       url: IGDBEndpoints.LANGUAGES,
-      headers: IGDBApi.headers,
       method: 'POST',
       data: `fields name,native_name,locale; where id = (${idsIdiomas.join(',')});`
     });
@@ -128,15 +97,14 @@ export default class IGDBApi implements IIGDBApi {
   }
 
   /** Requisita nomes alternativos a partir dos IDs na api do IGDB */
-  public async getAltNames(ids: number[]): Promise<string[]> {
+  public static async getAltNames(ids: number[]): Promise<string[]> {
     if (ids.length == 0) {
       return [];
     }
 
-    const { data } = await api<AlternativeName[]>({
+    const { data } = await BaseTwitchApi.request<AlternativeName[]>({
       url: IGDBEndpoints.ALTERNATIVE_NAMES,
       method: 'POST',
-      headers: IGDBApi.headers,
       data: `fields game,name; where id = (${ids.join(',')});`
     });
 
@@ -144,14 +112,13 @@ export default class IGDBApi implements IIGDBApi {
   }
 
   /** Requisita DLCs a partir dos IDs na api do IGDB */
-  public async getDLCs(ids: number[]): Promise<GameData[]> {
+  public static async getDLCs(ids: number[]): Promise<GameData[]> {
     if (ids.length == 0) {
       return [];
     }
 
-    const { data } = await api<Game[]>({
+    const { data } = await BaseTwitchApi.request<Game[]>({
       url: IGDBEndpoints.GAMES,
-      headers: IGDBApi.headers,
       method: 'POST',
       data: `fields name,aggregated_rating; where id = (${ids.join(',')});`,
     });
@@ -164,14 +131,13 @@ export default class IGDBApi implements IIGDBApi {
   }
 
   /** Requisita gêneros a partir dos IDs na api do IGDB */
-  public async getGenres(ids: number[]): Promise<string[]> {
+  public static async getGenres(ids: number[]): Promise<string[]> {
     if (ids.length == 0) {
       return [];
     }
 
-    const { data } = await api<Genre[]>({
+    const { data } = await BaseTwitchApi.request<Genre[]>({
       url: IGDBEndpoints.GENRES,
-      headers: IGDBApi.headers,
       method: 'POST',
       data: `fields name; where id = (${ids.join(',')});`
     });
@@ -180,14 +146,13 @@ export default class IGDBApi implements IIGDBApi {
   }
 
   /** Requisita plataformas a partir dos IDs na api do IGDB */
-  public async getPlatforms(ids: number[]): Promise<string[]> {
+  public static async getPlatforms(ids: number[]): Promise<string[]> {
     if (ids.length == 0) {
       return [];
     }
 
-    const { data } = await api<Platform[]>({
+    const { data } = await BaseTwitchApi.request<Platform[]>({
       url: IGDBEndpoints.PLATFORMS,
-      headers: IGDBApi.headers,
       method: 'POST',
       data: `fields name; where id = (${ids.join(',')});`
     });
